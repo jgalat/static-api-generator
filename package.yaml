@@ -1,0 +1,42 @@
+name:                static-api-generator
+version:             0.1.0.0
+github:              "jgalat/static-api-generator"
+license:             GPL-3
+author:              "Jorge Galat"
+maintainer:          "jrgglt@gmail.com"
+copyright:           "2018 Jorge Galat"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Development
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on Github at <https://github.com/jgalat/static-api-generator#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- mtl
+- aeson
+- containers
+- directory
+
+library:
+  source-dirs: src
+
+tests:
+  static-api-generator-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - static-api-generator
+    - hspec
