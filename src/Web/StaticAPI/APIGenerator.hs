@@ -1,35 +1,39 @@
 {-# LANGUAGE ExistentialQuantification #-}
-module StaticAPI.APIGenerator where
+module Web.StaticAPI.APIGenerator where
 
+import           Web.StaticAPI.APIGeneratorOptions
+import           Web.StaticAPI.Route
+import           Web.StaticAPI.Type
+import           Web.StaticAPI.VarMap
 import           Data.Aeson
-import           StaticAPI.Route
-import           StaticAPI.Type
-import           StaticAPI.VarMap
 import qualified Data.ByteString.Lazy as BL
 import           System.Directory
 
 type Schema   = String
 type RawPath  = String
-data EndPoint = forall a. (ToJSON a) => EndPoint FilePath a
+data EndPoint = forall a . (ToJSON a) => EndPoint FilePath a
 
 concat' :: String -> String -> String
 concat' x y = x ++ ('/' : y)
 
 index :: FilePath
-index = "/index.html"
+index = "/index"
 
-runStaticAPI :: StaticAPI -> String -> IO ()
-runStaticAPI (StaticAPI routes) output =
+staticAPI :: StaticAPI -> APIGeneratorOptions -> IO ()
+staticAPI (StaticAPIM _ routes) options =
   let trees = map endPointGenerator routes
-  in  mapM_ (directoryCreator output) trees
+  in  mapM_ (directoryCreator options) trees
 
-directoryCreator :: String -> [EndPoint] -> IO ()
-directoryCreator output e = mapM_ directoryCreator' e
+directoryCreator :: APIGeneratorOptions -> [EndPoint] -> IO ()
+directoryCreator options = mapM_ directoryCreator'
   where
-    directoryCreator' (EndPoint dp r) = do
-      let fullpath = output ++ dp
-      createDirectoryIfMissing True (output ++ dp)
-      BL.writeFile (fullpath ++ index) (encode r)
+    outputDirectory = output options
+    ext             = extension (fileFormat options)
+    indexFile       = index ++ ext
+    directoryCreator' (EndPoint fp r) = do
+      let fullpath = outputDirectory ++ fp
+      createDirectoryIfMissing True fullpath
+      BL.writeFile (fullpath ++ indexFile) (encode r)
 
 endPointGenerator :: Route -> [EndPoint]
 endPointGenerator (Route [] _) = undefined
@@ -56,7 +60,7 @@ genRawPaths ps = map ('/' :) (genRawPaths' ps)
       return (concat' path routes)
 
 genSchema :: Path -> Schema
-genSchema ps = '/' : (genSchema' ps)
+genSchema ps = '/' : genSchema' ps
   where
     genSchema' :: Path -> Schema
     genSchema' [] = undefined
@@ -79,7 +83,7 @@ genVarMap rp sc = genVarMap' (tail rp) (tail sc) []
           ssp     = getSubPath sc
           restRP  = dropSubPath rp
           restSC  = dropSubPath sc
-      in if (isVariable ssp)
+      in if isVariable ssp
           then  let k  = getVariableKey ssp
                     kv = (k, rsp)
                 in genVarMap' restRP restSC (kv:acc)

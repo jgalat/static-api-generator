@@ -1,4 +1,4 @@
-module StaticAPI.VarMap where
+module Web.StaticAPI.VarMap where
 
 import qualified Data.Map.Lazy as Map
 import           Data.Maybe
