@@ -15,8 +15,7 @@ spec =
   describe "Route" $ do
     describe "Route.root" $
       it "should return a constant empty path" $ do
-        let [Constant p] = root
-        p `shouldBe` ""
+        root `shouldBe` []
 
     describe "Route.constant" $
       it "should return a constant path" $ do

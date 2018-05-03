@@ -8,7 +8,7 @@ import           Web.StaticAPI.VarMap
 (</>) = (++)
 
 root :: Path
-root = [Constant ""]
+root = []
 
 constant :: String -> Path
 constant path = [Constant path]

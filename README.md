@@ -68,4 +68,14 @@ output
             └── index.html
 ```
 
+```bash
+$ cat output/games/index.html
+[{"year":"1985","title":"Super Mario Bros.","publisher":"Nintendo"},{"year":"1986","title":"The legend of Zelda","publisher":"Nintendo"},{"year":"1987","title":"Metal Gear","publisher":"Konami"}]
+```
+
+```bash
+$ cat output/games/publisher/Nintendo/index.html
+[{"year":"1985","title":"Super Mario Bros.","publisher":"Nintendo"},{"year":"1986","title":"The legend of Zelda","publisher":"Nintendo"}]
+```
+
 You can then host your API with services like [Github Pages](https://pages.github.com/).
