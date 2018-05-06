@@ -12,4 +12,8 @@ fromList :: [(String, String)] -> VarMap
 fromList = Map.fromList
 
 get :: String -> VarMap -> String
-get k vm = fromJust (Map.lookup k vm)
+get k vm =
+  maybe
+    (error "StaticAPI: given key (" ++ k ++ ") couldn't be found in the map.")
+    (id)
+    (Map.lookup k vm)
