@@ -7,7 +7,7 @@ module Web.StaticAPI (
   VarMap,
   -- Functions
   staticAPI,
-  (</>),
+  (./),
   route,
   root,
   constant,
@@ -18,6 +18,6 @@ module Web.StaticAPI (
 
 import  Web.StaticAPI.APIGenerator  (staticAPI)
 import  Web.StaticAPI.APIGeneratorOptions (APIGeneratorOptions (..), defaultOpts)
-import  Web.StaticAPI.Route         ((</>), constant, variable, route, root)
+import  Web.StaticAPI.Route         ((./), constant, variable, route, root)
 import  Web.StaticAPI.Type          (Path, Route, StaticAPI)
 import  Web.StaticAPI.VarMap        (VarMap, get)

@@ -30,9 +30,9 @@ spec =
         elem "var2" p `shouldBe` True
         length p `shouldBe` 2
 
-    describe "Route.</>" $
+    describe "Route.(./)" $
       it "should concat 2 paths" $ do
-        let route = constantPath </> constantSubPath
+        let route = constantPath ./ constantSubPath
         route `shouldBe` (constantPath ++ constantSubPath)
 
     describe "Route.route" $

@@ -36,11 +36,11 @@ videogamesAPI =
     route gamesRoot $ \_ ->
       db
     -- "/games/publisher/:name"
-    route (gamesRoot </> constant "publisher" </> variable "name" ps) $ \e ->
+    route (gamesRoot ./ constant "publisher" ./ variable "name" ps) $ \e ->
       let p = get "name" e
       in filter (\vg -> publisher vg == p) db
     -- "/games/year/:year"
-    route (gamesRoot </> constant "year" </> variable "year" ys) $ \e ->
+    route (gamesRoot ./ constant "year" ./ variable "year" ys) $ \e ->
       let y = get "year" e
       in filter (\vg -> year vg == y) db
 

@@ -4,8 +4,8 @@ import           Data.Aeson
 import           Web.StaticAPI.Type
 import           Web.StaticAPI.VarMap
 
-(</>) :: Path -> Path -> Path
-(</>) = (++)
+(./) :: Path -> Path -> Path
+(./) = (++)
 
 root :: Path
 root = []
