@@ -14,7 +14,7 @@ spec :: Spec
 spec =
   describe "Route" $ do
     describe "Route.root" $
-      it "should return a constant empty path" $ do
+      it "should return a constant empty path" $
         root `shouldBe` []
 
     describe "Route.constant" $

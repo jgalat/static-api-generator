@@ -22,7 +22,7 @@ prefixPS :: RawPath -> RawPath
 prefixPS = (pathSeparator :)
 
 concatPath :: FilePath -> FilePath -> FilePath
-concatPath x y = x ++ (prefixPS y)
+concatPath x y = x ++ prefixPS y
 
 concatRawPath :: RawPath -> RawPath -> RawPath
 concatRawPath = concatPath

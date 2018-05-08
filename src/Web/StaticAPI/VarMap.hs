@@ -13,7 +13,6 @@ fromList = Map.fromList
 
 get :: String -> VarMap -> String
 get k vm =
-  maybe
+  fromMaybe
     (error "StaticAPI: given key (" ++ k ++ ") couldn't be found in the map.")
-    (id)
     (Map.lookup k vm)
