@@ -14,7 +14,7 @@ constant :: String -> Path
 constant path = [Constant path]
 
 variable :: String -> [String] -> Path
-variable name paths = [Variable (':':name) paths]
+variable name paths = [Variable name paths]
 
 addRoute :: Route -> StaticAPIM ()
 addRoute r = StaticAPIM () [r]

@@ -14,5 +14,5 @@ fromList = Map.fromList
 get :: String -> VarMap -> String
 get k vm =
   fromMaybe
-    (error "StaticAPI: given key (" ++ k ++ ") couldn't be found in the map.")
+    (error ("StaticAPI: given key (" ++ k ++ ") couldn't be found in the map."))
     (Map.lookup k vm)

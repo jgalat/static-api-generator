@@ -25,7 +25,7 @@ spec =
     describe "Route.variable" $
       it "should return a variable path" $ do
         let [Variable name p] = variablePath2
-        name `shouldBe` ":name"
+        name `shouldBe` "name"
         elem "var1" p `shouldBe` True
         elem "var2" p `shouldBe` True
         length p `shouldBe` 2
