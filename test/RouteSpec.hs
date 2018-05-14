@@ -2,7 +2,7 @@ module RouteSpec (spec) where
 
 import           Test.Hspec
 import           Web.StaticAPI.Route
-import           Web.StaticAPI.Type
+import           Web.StaticAPI.Internal.Types
 
 constantPath        = constant "path"
 constantPath2       = constant "path2"
@@ -37,5 +37,6 @@ spec =
 
     describe "Route.route" $
       it "should return a static api with one route" $ do
-        let StaticAPIM () rs = route constantPath (const ())
+        let sapi = route constantPath (return ())
+        let rs   = getRoutes sapi
         length rs `shouldBe` 1

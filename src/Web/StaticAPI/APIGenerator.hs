@@ -1,16 +1,15 @@
 {-# LANGUAGE ExistentialQuantification #-}
 module Web.StaticAPI.APIGenerator where
 
-import           Web.StaticAPI.APIGeneratorOptions
-import           Web.StaticAPI.Type
-import           Web.StaticAPI.VarMap
-import           Data.List
-import           Data.Aeson
-import qualified Data.ByteString.Lazy as BL
-import           System.Directory
+import           Data.Aeson hiding (Options)
+import qualified Data.ByteString.Lazy as BSL
+import           Data.Default.Class (def)
+import           Data.List (intercalate)
+import           System.Directory (createDirectoryIfMissing)
 
-type RawPath  = String
-data EndPoint = forall a . (ToJSON a) => EndPoint FilePath a
+import           Web.StaticAPI.Internal.Types
+import           Web.StaticAPI.Route
+import           Web.StaticAPI.StaticResponse
 
 pathSeparator :: Char
 pathSeparator = '/'
@@ -24,12 +23,16 @@ prefixPS = (pathSeparator :)
 concatPath :: FilePath -> FilePath -> FilePath
 concatPath x y = x ++ prefixPS y
 
-staticAPI :: StaticAPI -> APIGeneratorOptions -> IO ()
-staticAPI (StaticAPIM _ routes) options =
-  let trees = map endPointGenerator routes
-  in  mapM_ (directoryCreator options) trees
+staticAPI :: StaticAPI -> IO ()
+staticAPI sapi = staticAPIOpts sapi def
 
-directoryCreator :: APIGeneratorOptions -> [EndPoint] -> IO ()
+staticAPIOpts :: StaticAPI -> Options -> IO ()
+staticAPIOpts sapi options =
+  let routes    = getRoutes sapi
+      endPoints = map endPointGenerator routes
+  in  mapM_ (directoryCreator options) endPoints
+
+directoryCreator :: Options -> [EndPoint] -> IO ()
 directoryCreator options = mapM_ directoryCreator'
   where
     output  = outputDirectory options
@@ -38,24 +41,27 @@ directoryCreator options = mapM_ directoryCreator'
     directoryCreator' (EndPoint fp r) = do
       let fullpath = output ++ fp
       createDirectoryIfMissing True fullpath
-      BL.writeFile (concatPath fullpath oFile) (encode r)
+      BSL.writeFile (concatPath fullpath oFile) (encode r)
 
 endPointGenerator :: Route -> [EndPoint]
-endPointGenerator (Route p f) = map endPointGenerator' (genVarMaps p)
+endPointGenerator (Route p sr) = map endPointGenerator' (genEnvironments p)
   where
-    endPointGenerator' :: VarMap -> EndPoint
-    endPointGenerator' vm = EndPoint (genRawPath p vm) (f vm)
+    endPointGenerator' :: Environment -> EndPoint
+    endPointGenerator' e =
+      let rawPath         = genRawPath p e
+          staticResponse  = getStaticResponse sr e
+      in  EndPoint rawPath staticResponse
 
-genRawPath :: Path -> VarMap -> RawPath
+genRawPath :: Path -> Environment -> RawPath
 genRawPath [] _ = [pathSeparator]
-genRawPath p vm = prefixPS (intercalate [pathSeparator] (map genRawPath' p))
+genRawPath p  e = prefixPS (intercalate [pathSeparator] (map genRawPath' p))
   where
     genRawPath' :: SubPath -> RawPath
     genRawPath' (Constant v)    = v
-    genRawPath' (Variable n _)  = get n vm
+    genRawPath' (Variable n _)  = getVariable n e
 
-genVarMaps :: Path -> [VarMap]
-genVarMaps p =
+genEnvironments :: Path -> [Environment]
+genEnvironments p =
   let vars  = filter onlyVariables p
       pairs = map genPairs vars
   in  map fromList (sequence pairs)

@@ -1,23 +1,31 @@
 module Web.StaticAPI (
   -- Types
-  APIGeneratorOptions (..),
-  Route,
-  Path,
-  StaticAPI,
-  VarMap,
+    Options (..)
+  , Path
+  , StaticAPI
+  , StaticResponse
   -- Functions
-  staticAPI,
-  (./),
-  route,
-  root,
-  constant,
-  variable,
-  get,
-  defaultOpts
-) where
+  , staticAPI
+  , staticAPIOpts
+  , (./)
+  , root
+  , constant
+  , variable
+  , route
+  , readVariable
+  ) where
 
-import  Web.StaticAPI.APIGenerator  (staticAPI)
-import  Web.StaticAPI.APIGeneratorOptions (APIGeneratorOptions (..), defaultOpts)
-import  Web.StaticAPI.Route         ((./), constant, variable, route, root)
-import  Web.StaticAPI.Type          (Path, Route, StaticAPI)
-import  Web.StaticAPI.VarMap        (VarMap, get)
+import  Web.StaticAPI.APIGenerator    ( staticAPI
+                                      , staticAPIOpts )
+import  Web.StaticAPI.Route           ( (./)
+                                      , root
+                                      , constant
+                                      , variable
+                                      , route )
+
+import  Web.StaticAPI.StaticResponse  ( readVariable )
+
+import  Web.StaticAPI.Internal.Types  ( Options (..)
+                                      , Path
+                                      , StaticAPI
+                                      , StaticResponse )

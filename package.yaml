@@ -1,5 +1,5 @@
 name:                static-api-generator
-version:             0.1.4.0
+version:             0.1.5.0
 github:              "jgalat/static-api-generator"
 license:             GPL-3
 author:              "Jorge Galat"
@@ -19,11 +19,13 @@ extra-source-files:
 description:         Please see the README on Github at <https://github.com/jgalat/static-api-generator#readme>
 
 dependencies:
+- aeson
 - base >= 4.7 && < 5
 - bytestring
-- aeson
 - containers
+- data-default-class
 - directory
+- mtl
 
 library:
   source-dirs: src

@@ -1,8 +1,9 @@
 module Web.StaticAPI.Route where
 
-import           Data.Aeson
-import           Web.StaticAPI.Type
-import           Web.StaticAPI.VarMap
+import           Data.Aeson (ToJSON)
+import           Control.Monad.Writer (execWriter, tell)
+
+import           Web.StaticAPI.Internal.Types
 
 (./) :: Path -> Path -> Path
 (./) = (++)
@@ -17,7 +18,10 @@ variable :: String -> [String] -> Path
 variable name paths = [Variable name paths]
 
 addRoute :: Route -> StaticAPIM ()
-addRoute r = StaticAPIM () [r]
+addRoute r = StaticAPIM (tell [r])
 
-route :: ToJSON a => Path -> (VarMap -> a) -> StaticAPI
-route p f = addRoute (Route p f)
+getRoutes :: StaticAPIM a -> [Route]
+getRoutes = execWriter . runSAPI
+
+route :: ToJSON a => Path -> StaticResponse a -> StaticAPI
+route p sr = addRoute (Route p sr)
