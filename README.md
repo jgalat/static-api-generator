@@ -33,19 +33,20 @@ videogamesAPI =
       years      = map years db
   in do
     -- "/games"
-    route gamesRoot $ \_ ->
-      db
+    route gamesRoot (return db)
+
     -- "/games/publisher/:name"
-    route (gamesRoot ./ constant "publisher" ./ variable "name" publishers) $ \e ->
-      let p = get "name" e
-      in filter (\vg -> publisher vg == p) db
+    route (gamesRoot ./ constant "publisher" ./ variable "name" publishers) $ do
+      p <- readVariable "name"
+      return (filter (\vg -> publisher vg == p) db)
+
     -- "/games/year/:year"
-    route (gamesRoot ./ constant "year" ./ variable "year" years) $ \e ->
-      let y = get "year" e
-      in filter (\vg -> year vg == y) db
+    route (gamesRoot ./ constant "year" ./ variable "year" years) $ do
+      y <- readVariable "year"
+      return (filter (\vg -> year vg == y) db)
 
 main :: IO ()
-main = staticAPI videogamesAPI defaultOpts
+main = staticAPI videogamesAPI
 ```
 
 The example above would generate the following directory tree:
