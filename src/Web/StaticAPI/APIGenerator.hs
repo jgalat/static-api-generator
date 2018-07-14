@@ -2,7 +2,6 @@
 module Web.StaticAPI.APIGenerator where
 
 import           Data.Aeson hiding (Options)
-import qualified Data.ByteString.Lazy as BSL
 import           Data.Default.Class (def)
 import           Data.List (intercalate)
 import           System.Directory (createDirectoryIfMissing)
@@ -41,7 +40,7 @@ directoryCreator options = mapM_ directoryCreator'
     directoryCreator' (EndPoint fp r) = do
       let fullpath = output ++ fp
       createDirectoryIfMissing True fullpath
-      BSL.writeFile (concatPath fullpath oFile) (encode r)
+      encodeFile (concatPath fullpath oFile) r
 
 endPointGenerator :: Route -> [EndPoint]
 endPointGenerator (Route p sr) = map endPointGenerator' (genEnvironments p)
