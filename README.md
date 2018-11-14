@@ -30,7 +30,7 @@ videogamesAPI :: StaticAPI
 videogamesAPI =
   let gamesRoot  = constant "games"
       publishers = map publisher db
-      years      = map years db
+      years      = map year db
   in do
     -- "/games"
     route gamesRoot (return db)
