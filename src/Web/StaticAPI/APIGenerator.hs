@@ -4,68 +4,57 @@ module Web.StaticAPI.APIGenerator where
 import           Data.Aeson hiding (Options)
 import           Data.Default.Class (def)
 import           Data.List (intercalate)
+import           Data.Map.Lazy (Map, empty, insert)
+import           Data.Maybe (isJust)
+import           Data.Text (Text, unpack)
 import           System.Directory (createDirectoryIfMissing)
+import           System.FilePath (joinPath)
 
 import           Web.StaticAPI.Internal.Types
 import           Web.StaticAPI.Route
 import           Web.StaticAPI.StaticResponse
-
-pathSeparator :: Char
-pathSeparator = '/'
-
-root :: FilePath
-root = [pathSeparator]
-
-prefixPS :: RawPath -> RawPath
-prefixPS = (pathSeparator :)
-
-concatPath :: FilePath -> FilePath -> FilePath
-concatPath x y = x ++ prefixPS y
 
 staticAPI :: StaticAPI -> IO ()
 staticAPI sapi = staticAPIOpts sapi def
 
 staticAPIOpts :: StaticAPI -> Options -> IO ()
 staticAPIOpts sapi options =
-  let routes    = getRoutes sapi
-      endPoints = map endPointGenerator routes
-  in  mapM_ (directoryCreator options) endPoints
+    let routes          = getRoutes sapi
+        routesEndpoints = map genEndpoints routes
+    in mapM_ (encodeEndpoints options) routesEndpoints
 
-directoryCreator :: Options -> [EndPoint] -> IO ()
-directoryCreator options = mapM_ directoryCreator'
-  where
-    output  = outputDirectory options
-    oFile   = outputFile options
-    directoryCreator' :: EndPoint -> IO ()
-    directoryCreator' (EndPoint fp r) = do
-      let fullpath = output ++ fp
-      createDirectoryIfMissing True fullpath
-      encodeFile (concatPath fullpath oFile) r
+encodeEndpoints :: Options -> [Endpoint] -> IO ()
+encodeEndpoints options = mapM_ encodeEndpoint
+    where
+        encodeEndpoint :: Endpoint -> IO ()
+        encodeEndpoint (Endpoint path response) =
+            let rootPath   = outputPath options
+                folderPath = joinPath [rootPath, path]
+                filePath   = joinPath [folderPath, "index.html"]
+            in do
+                createDirectoryIfMissing True folderPath
+                encodeFile filePath response
 
-endPointGenerator :: Route -> [EndPoint]
-endPointGenerator (Route p sr) = map endPointGenerator' (genEnvironments p)
-  where
-    endPointGenerator' :: Environment -> EndPoint
-    endPointGenerator' e =
-      let rawPath         = genRawPath p e
-          staticResponse  = getStaticResponse sr e
-      in  EndPoint rawPath staticResponse
-
-genRawPath :: Path -> Environment -> RawPath
-genRawPath [] _ = [pathSeparator]
-genRawPath p  e = prefixPS (intercalate [pathSeparator] (map genRawPath' p))
-  where
-    genRawPath' :: SubPath -> RawPath
-    genRawPath' (Constant v)    = v
-    genRawPath' (Variable n _)  = getVariable n e
+genEndpoints :: Route -> [Endpoint]
+genEndpoints (Route p sr) =
+    let environments   = genEnvironments p
+    in map endpoint environments
+    where
+        endpoint env@Environment { allPathSegments = aps } =
+            Endpoint (joinPath (map unpack aps)) (runStaticResponse sr env)
 
 genEnvironments :: Path -> [Environment]
-genEnvironments p =
-  let vars  = filter onlyVariables p
-      pairs = map genPairs vars
-  in  map fromList (sequence pairs)
-  where
-    onlyVariables (Variable _ _)    = True
-    onlyVariables (Constant _)      = False
-    genPairs :: SubPath -> [(String, RawPath)]
-    genPairs (Variable name values) = map ((,) name) values
+genEnvironments (Path pss) =
+    let rawPathSegments = map (\ps -> (name ps, values ps)) pss
+        pairs = map (\(mn, vs) -> map ((,) mn) vs) rawPathSegments
+        rawEnvironments = sequence pairs
+    in map genEnv rawEnvironments
+    where
+        genEnv :: [(Maybe Text, Text)] -> Environment
+        genEnv rawEnv = Environment
+            { allPathSegments   = map snd rawEnv
+            , namedPathSegments = foldl insertIf empty rawEnv
+            }
+        insertIf :: Map Text Text -> (Maybe Text, Text) -> Map Text Text
+        insertIf m (Nothing, _) = m
+        insertIf m (Just n, v)  = insert n v m

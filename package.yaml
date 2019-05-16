@@ -1,10 +1,9 @@
 name:                static-api-generator
-version:             0.1.7.0
+version:             0.2.0.0
 github:              "jgalat/static-api-generator"
 license:             GPL-3
 author:              "Jorge Galat"
 maintainer:          "jrgglt@gmail.com"
-copyright:           "2018 Jorge Galat"
 
 extra-source-files:
 - README.md
@@ -24,7 +23,9 @@ dependencies:
 - containers
 - data-default-class
 - directory
+- filepath
 - mtl
+- text
 
 library:
   source-dirs: src

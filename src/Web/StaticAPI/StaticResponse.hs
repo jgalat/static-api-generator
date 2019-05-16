@@ -4,20 +4,21 @@ import           Data.Aeson (ToJSON)
 import           Control.Monad.Reader (reader, runReader)
 import qualified Data.Map.Lazy as Map (fromList, lookup)
 import           Data.Maybe (fromMaybe)
+import           Data.Text (Text, unpack)
 
 import           Web.StaticAPI.Internal.Types
 
-fromList :: [(String, String)] -> Environment
-fromList = Map.fromList
+lookUpPathSegment :: Text -> Environment -> Text
+lookUpPathSegment name Environment { namedPathSegments = nps } =
+    fromMaybe
+        (error ("StaticAPI: Couldn't find variable (" ++ unpack name ++ ") in environment."))
+        (Map.lookup name nps)
 
-getVariable :: String -> Environment -> String
-getVariable s e =
-  fromMaybe
-    (error ("StaticAPI: Couldn't find variable (" ++ s ++ ") in environment."))
-    (Map.lookup s e)
+getPathSegment :: Text -> StaticResponse Text
+getPathSegment name = StaticResponse (reader (lookUpPathSegment name))
 
-readVariable :: String -> StaticResponse String
-readVariable s = StaticResponse (reader (getVariable s))
+pathSegments :: StaticResponse [Text]
+pathSegments = StaticResponse (reader allPathSegments)
 
-getStaticResponse :: ToJSON a => StaticResponse a -> Environment -> a
-getStaticResponse = runReader . runSR
+runStaticResponse :: ToJSON a => StaticResponse a -> Environment -> a
+runStaticResponse = runReader . runSR

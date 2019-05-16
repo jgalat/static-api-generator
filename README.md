@@ -6,19 +6,25 @@ A Haskell DSL for writing static JSON APIs. This is a work in progress.
 
 ```haskell
 {-# LANGUAGE OverloadedStrings #-}
-import Data.Aeson
-import Web.StaticAPI
+{-# LANGUAGE ExtendedDefaultRules #-}
+import           Data.Aeson
+import           Data.Text (Text)
+import           Web.StaticAPI
 
-data Videogame = Videogame  { title     :: String
-                            , publisher :: String
-                            , year      :: String
-                            }
+default (Text)
+
+data Videogame = Videogame
+    { title     :: Text
+    , publisher :: Text
+    , year      :: Text
+    }
 
 instance ToJSON Videogame where
-  toJSON vg = object [ "title"      .= title vg
-                     , "publisher"  .= publisher vg
-                     , "year"       .= year vg
-                     ]
+    toJSON vg = object
+        [ "title"      .= title vg
+        , "publisher"  .= publisher vg
+        , "year"       .= year vg
+        ]
 
 db :: [Videogame]
 db = [ Videogame "Super Mario Bros." "Nintendo" "1985"
@@ -28,22 +34,21 @@ db = [ Videogame "Super Mario Bros." "Nintendo" "1985"
 
 videogamesAPI :: StaticAPI
 videogamesAPI =
-  let gamesRoot  = constant "games"
-      publishers = map publisher db
-      years      = map year db
-  in do
-    -- "/games"
-    route gamesRoot (return db)
+    let publishers = map publisher db
+        years      = map year db
+    in do
+        -- "/games"
+        route "games" (return db)
 
-    -- "/games/publisher/:name"
-    route (gamesRoot ./ constant "publisher" ./ variable "name" publishers) $ do
-      p <- readVariable "name"
-      return (filter (\vg -> publisher vg == p) db)
+        -- "/games/publisher/:name"
+        route ("games" ./ "publisher" ./ "name" .> publishers) $ do
+            p <- getPathSegment "name"
+            return (filter (\vg -> publisher vg == p) db)
 
-    -- "/games/year/:year"
-    route (gamesRoot ./ constant "year" ./ variable "year" years) $ do
-      y <- readVariable "year"
-      return (filter (\vg -> year vg == y) db)
+        -- "/games/year/:year"
+        route ("games" ./ "year" ./ "year" .> years) $ do
+            y <- getPathSegment "year"
+            return (filter (\vg -> year vg == y) db)
 
 main :: IO ()
 main = staticAPI videogamesAPI
@@ -52,7 +57,7 @@ main = staticAPI videogamesAPI
 The example above would generate the following directory tree:
 
 ```
-output
+public
 └── games
     ├── index.html
     ├── publisher
