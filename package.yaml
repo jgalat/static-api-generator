@@ -1,5 +1,5 @@
 name:                static-api-generator
-version:             0.2.0.0
+version:             0.2.1.0
 github:              "jgalat/static-api-generator"
 license:             GPL-3
 author:              "Jorge Galat"
@@ -39,5 +39,11 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - static-api-generator
+    - aeson
+    - directory
     - hspec
+    - hspec-wai
+    - static-api-generator
+    - text
+    - wai
+    - wai-app-static

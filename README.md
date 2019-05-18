@@ -5,8 +5,7 @@
 A Haskell DSL for writing static JSON APIs. This is a work in progress.
 
 ```haskell
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ExtendedDefaultRules #-}
+{-# LANGUAGE OverloadedStrings, ExtendedDefaultRules #-}
 import           Data.Aeson
 import           Data.Text (Text)
 import           Web.StaticAPI
