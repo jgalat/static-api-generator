@@ -74,7 +74,7 @@ public
 ```
 
 ```bash
-$ cat output/games/index.html | jq
+$ cat public/games/index.html | jq
 [
   {
     "year": "1985",
@@ -95,7 +95,7 @@ $ cat output/games/index.html | jq
 ```
 
 ```bash
-$ cat output/games/year/1986/index.html | jq
+$ cat public/games/year/1986/index.html | jq
 [
   {
     "year": "1986",
@@ -106,7 +106,7 @@ $ cat output/games/year/1986/index.html | jq
 ```
 
 ```bash
-$ cat output/games/publisher/Nintendo/index.html | jq
+$ cat public/games/publisher/Nintendo/index.html | jq
 [
   {
     "year": "1985",
@@ -121,4 +121,4 @@ $ cat output/games/publisher/Nintendo/index.html | jq
 ]
 ```
 
-You can then host your API with services like [Github Pages](https://pages.github.com/).
+You can then host your API with services like [Github Pages](https://pages.github.com/) or [Netlify](https://www.netlify.com/).
