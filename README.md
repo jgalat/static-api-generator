@@ -2,13 +2,13 @@
 [![Build Status](https://travis-ci.org/jgalat/static-api-generator.svg?branch=master)](https://travis-ci.org/jgalat/static-api-generator)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-A Haskell DSL for writing static JSON APIs. This is a work in progress.
+A Haskell DSL for writing static JSON APIs.
 
 ```haskell
 {-# LANGUAGE OverloadedStrings, ExtendedDefaultRules #-}
 import           Data.Aeson
 import           Data.Text (Text)
-import           Web.StaticAPI
+import           Network.API.StaticAPI
 
 default (Text)
 
@@ -31,29 +31,29 @@ db = [ Videogame "Super Mario Bros." "Nintendo" "1985"
      , Videogame "Metal Gear" "Konami" "1987"
      ]
 
-videogamesAPI :: StaticAPI
+videogamesAPI :: StaticAPI ()
 videogamesAPI =
     let publishers = map publisher db
         years      = map year db
     in do
         -- "/games"
-        route "games" (return db)
+        route "games" (return (toJSON db))
 
         -- "/games/publisher/:name"
         route ("games" ./ "publisher" ./ "name" .> publishers) $ do
             p <- getPathSegment "name"
-            return (filter (\vg -> publisher vg == p) db)
+            return (toJSON (filter (\vg -> publisher vg == p) db))
 
         -- "/games/year/:year"
         route ("games" ./ "year" ./ "year" .> years) $ do
             y <- getPathSegment "year"
-            return (filter (\vg -> year vg == y) db)
+            return (toJSON (filter (\vg -> year vg == y) db))
 
 main :: IO ()
 main = staticAPI videogamesAPI
 ```
 
-The example above would generate the following directory tree:
+The example above will generate the following directory tree:
 
 ```
 public

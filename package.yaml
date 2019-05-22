@@ -1,31 +1,33 @@
 name:                static-api-generator
-version:             0.2.1.0
-github:              "jgalat/static-api-generator"
-license:             GPL-3
-author:              "Jorge Galat"
-maintainer:          "jrgglt@gmail.com"
+version:             0.3.0.0
+github:              jgalat/static-api-generator
+license:             GPL
+author:              Jorge Galat <jrgglt@gmail.com>
+maintainer:          Jorge Galat <jrgglt@gmail.com>
 
 extra-source-files:
 - README.md
 
 # Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Development
+synopsis:            A Haskell DSL for writing static APIs
+category:            Network
+stability:           experimental
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on Github at <https://github.com/jgalat/static-api-generator#readme>
+description:
+  A Haskell DSL for writing static APIs
 
 dependencies:
 - aeson
 - base >= 4.7 && < 5
-- containers
+- bytestring
 - data-default-class
 - directory
 - filepath
-- mtl
 - text
+- transformers
 
 library:
   source-dirs: src
