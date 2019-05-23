@@ -1,8 +1,11 @@
-# static-api-generator
+<h1 align="center">
+  <img alt="static-api-generator" src=".github/logo.jpg">
+</h1>
+
 [![Build Status](https://travis-ci.org/jgalat/static-api-generator.svg?branch=master)](https://travis-ci.org/jgalat/static-api-generator)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-A Haskell DSL for writing static JSON APIs.
+A Haskell DSL for writing static APIs.
 
 ```haskell
 {-# LANGUAGE OverloadedStrings, ExtendedDefaultRules #-}
