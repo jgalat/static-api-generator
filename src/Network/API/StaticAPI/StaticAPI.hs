@@ -2,12 +2,15 @@ module Network.API.StaticAPI.StaticAPI
     ( StaticAPI
     , StaticAPIT
     , route
+    , root
+    , prefix
     , staticAPI
     , staticAPIOpts
     ) where
 
+import           Data.Text (empty)
 import           Control.Monad.IO.Class (MonadIO, liftIO)
-import           Control.Monad.Trans.Writer (WriterT, execWriterT, runWriterT, tell)
+import           Control.Monad.Trans.Writer (WriterT, execWriterT, runWriterT, tell, listen, pass)
 import qualified Data.ByteString.Lazy as BL (writeFile)
 import           Data.Default.Class (def)
 import           System.Directory (createDirectoryIfMissing)
@@ -27,6 +30,14 @@ type StaticAPI a = StaticAPIT IO a
 
 route :: (Monad m, ToPath a, ToStaticResponse b) => a -> StaticResponseT m b -> StaticAPIT m ()
 route p sr = tell [Route (toPath p) sr]
+
+root :: (Monad m, ToStaticResponse b) => StaticResponseT m b -> StaticAPIT m ()
+root = route empty
+
+prefix :: (Monad m, ToPath a) => a -> StaticAPIT m b -> StaticAPIT m b
+prefix r sapi = pass $ do
+    (a, _) <- listen sapi
+    return (a, map (\(Route p sr) -> Route (toPath r ./ p) sr))
 
 runStaticAPIT :: Monad m => StaticAPIT m a -> m (a, [Route m])
 runStaticAPIT = runWriterT

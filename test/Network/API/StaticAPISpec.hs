@@ -24,9 +24,10 @@ withStaticAPI api =
 
 spec :: Spec
 spec = do
-    describe "StaticAPI" $
+    describe "StaticAPI" $ do
+        let empty = return (toJSON ())
+
         describe "route" $ do
-            let empty = return (toJSON ())
 
             withStaticAPI (route "path" empty) $
                 it "adds a route for a constant path" $
@@ -54,6 +55,16 @@ spec = do
                           , "/path2/path2"
                           ] $ \path ->
                         get path `shouldRespondWith` 200
+
+        describe "root" $
+            withStaticAPI (root empty) $
+                it "adds a route at root level" $
+                    get "/" `shouldRespondWith` 200
+
+        describe "prefix" $
+            withStaticAPI (prefix ("api" ./ "v1") (route "path" empty)) $
+                it "adds a prefix route to each route in a static api" $
+                    get "/api/v1/path" `shouldRespondWith` 200
 
     describe "StaticResponse" $ do
         withStaticAPI (route "path" $ return (object ["bool" .= True])) $

@@ -38,17 +38,17 @@ videogamesAPI :: StaticAPI ()
 videogamesAPI =
     let publishers = map publisher db
         years      = map year db
-    in do
+    in prefix "games" $ do
         -- "/games"
-        route "games" (return (toJSON db))
+        root (return (toJSON db))
 
         -- "/games/publisher/:name"
-        route ("games" ./ "publisher" ./ "name" .> publishers) $ do
+        route ("publisher" ./ "name" .> publishers) $ do
             p <- getPathSegment "name"
             return (toJSON (filter (\vg -> publisher vg == p) db))
 
         -- "/games/year/:year"
-        route ("games" ./ "year" ./ "year" .> years) $ do
+        route ("year" ./ "year" .> years) $ do
             y <- getPathSegment "year"
             return (toJSON (filter (\vg -> year vg == y) db))
 
