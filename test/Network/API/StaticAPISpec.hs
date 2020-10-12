@@ -7,8 +7,8 @@ import           Data.Text (Text)
 import           Network.Wai (Application)
 import           Network.Wai.Application.Static (staticApp, defaultFileServerSettings)
 import           System.Directory (removeDirectoryRecursive)
-import           Test.Hspec
 import           Test.Hspec.Wai
+import           Test.Hspec
 
 import           Network.API.StaticAPI
 
@@ -17,7 +17,7 @@ default (Text)
 main :: IO ()
 main = hspec spec
 
-withStaticAPI :: StaticAPI () -> SpecWith Application -> Spec
+withStaticAPI :: StaticAPI () -> SpecWith ((), Application) -> Spec
 withStaticAPI api =
     with (staticAPI api >> return (staticApp (defaultFileServerSettings "public"))) .
         after_ (removeDirectoryRecursive "public")
