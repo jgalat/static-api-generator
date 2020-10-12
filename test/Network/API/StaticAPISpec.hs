@@ -17,7 +17,6 @@ default (Text)
 main :: IO ()
 main = hspec spec
 
-withStaticAPI :: StaticAPI () -> SpecWith ((), Application) -> Spec
 withStaticAPI api =
     with (staticAPI api >> return (staticApp (defaultFileServerSettings "public"))) .
         after_ (removeDirectoryRecursive "public")
