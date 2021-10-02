@@ -1,0 +1,27 @@
+on: [push, pull_request]
+
+name: Build
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest # or macOS-latest, or windows-latest
+    strategy:
+      matrix:
+        include:
+          - yaml: stack-lts-12.0.yaml
+          - yaml: stack-lts-13.21.yaml
+          - yaml: stack-lts-16.18.yaml
+          - yaml: stack.yaml
+    env:
+      STACK_YAML={{ matrix.yaml }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: haskell/actions/setup@v1
+        with:
+          enable-stack: true
+      - name: Build
+        run: stack --no-terminal --install-ghc test --only-dependencies
+      - name: Test
+        run: stack --no-terminal test --haddock --no-haddock-deps
+
