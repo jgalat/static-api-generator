@@ -2,7 +2,7 @@
   <img alt="static-api-generator" src=".github/logo.jpg">
 </h1>
 
-[![Build Status](https://travis-ci.org/jgalat/static-api-generator.svg?branch=master)](https://travis-ci.org/jgalat/static-api-generator)
+[![Build](https://github.com/jgalat/static-api-generator/actions/workflows/build.yml/badge.svg)](https://github.com/jgalat/static-api-generator/actions/workflows/build.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A Haskell DSL for writing static APIs.
