@@ -12,6 +12,7 @@ jobs:
           - yaml: stack-lts-12.0.yaml
           - yaml: stack-lts-13.21.yaml
           - yaml: stack-lts-16.18.yaml
+          - yaml: stack-lts-18.12.yaml
           - yaml: stack.yaml
     env:
       STACK_YAML: ${{ matrix.yaml }}
